@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Sensus RS - ChatBot System',
-  description: 'Sistema de ChatBot com gerenciamento de pacotes de mensagens',
+  title: 'Sensus RS ChatBot System',
+  description: 'Complete solution with AI chatbot, user management, and message packages',
 }
 
 export default function RootLayout({
@@ -16,7 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+      </body>
     </html>
   )
 }
