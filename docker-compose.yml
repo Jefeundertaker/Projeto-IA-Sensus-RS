@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:./dev.db
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  # Opcional: PostgreSQL para produção
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: sensus_rs
+      POSTGRES_USER: sensus_user
+      POSTGRES_PASSWORD: sensus_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

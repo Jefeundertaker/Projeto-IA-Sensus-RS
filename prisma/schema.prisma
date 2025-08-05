@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  messageUsages MessageUsage[]
+  purchases    Purchase[]
+
+  @@map("users")
+}
+
+model MessagePackage {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  messageCount Int
+  price       Float
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  purchases Purchase[]
+
+  @@map("message_packages")
+}
+
+model Purchase {
+  id              String           @id @default(cuid())
+  userId          String
+  packageId       String
+  status          PurchaseStatus   @default(PENDING)
+  paymentMethod   String?
+  transactionId   String?
+  messagesRemaining Int             @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package        MessagePackage  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  messageUsages  MessageUsage[]
+
+  @@map("purchases")
+}
+
+model MessageUsage {
+  id          String   @id @default(cuid())
+  userId      String
+  purchaseId  String
+  messageType String   @default("text")
+  content     String?
+  timestamp   DateTime @default(now())
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchase Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+
+  @@map("message_usages")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
